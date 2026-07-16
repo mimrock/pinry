@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.conf import settings
 from django.db.models import Q
 from rest_framework import serializers
@@ -137,15 +139,15 @@ class PinSerializer(serializers.HyperlinkedModelSerializer):
         tags = validated_data.pop('tag_list', [])
         pin = Pin.objects.create(submitter=submitter, image=image, **validated_data)
         if tags:
-            pin.tags.set(*tags)
+            pin.tags.set(tags)
         return pin
 
     def update(self, instance, validated_data):
         tags = validated_data.pop('tag_list', None)
         if tags:
-            instance.tags.set(*tags)
+            instance.tags.set(tags)
         else:
-            instance.tags.set()
+            instance.tags.set([])
         # change for image-id or image is not allowed
         validated_data.pop('image_by_id', None)
         return super(PinSerializer, self).update(instance, validated_data)
@@ -209,13 +211,13 @@ class BoardSerializer(serializers.HyperlinkedModelSerializer):
         help_text="only patch method works for this field"
     )
 
-    def get_total_pins(self, instance):
+    def get_total_pins(self, instance) -> int:
         query = instance.pins.all()
         request = self.context['request']
         query = filter_private_pin(request, query)
         return query.count()
 
-    def get_cover(self, instance: Board) -> dict or None:
+    def get_cover(self, instance: Board) -> Optional[dict]:
         pin = instance.pins.first()
         if pin is None:
             return None

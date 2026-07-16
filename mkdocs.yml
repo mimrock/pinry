@@ -19,6 +19,7 @@ nav:
   - Theories: 'theories.md'
   - Install with Docker: 'install-with-docker.md'
   - Development: 'development.md'
+  - Runtime Migration: 'runtime-migration.md'
   - Dependency Audit: 'dependency-audit.md'
   - API support: 'api.md'
   - Plugin System: 'plugin-system.md'

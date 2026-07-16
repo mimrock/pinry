@@ -23,7 +23,7 @@ class ImageViewSet(mixins.CreateModelMixin, GenericViewSet):
 class PinViewSet(viewsets.ModelViewSet):
     serializer_class = api.PinSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    filter_fields = ("submitter__username", 'tags__name', "pins__id")
+    filterset_fields = ("submitter__username", 'tags__name', "pins__id")
     ordering_fields = ('-id', )
     ordering = ('-id', )
     permission_classes = [IsOwnerOrReadOnly("submitter"), OwnerOnlyIfPrivate("submitter")]
@@ -38,7 +38,7 @@ class BoardViewSet(viewsets.ModelViewSet):
     serializer_class = api.BoardSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     search_fields = ("name", )
-    filter_fields = ("submitter__username", )
+    filterset_fields = ("submitter__username", )
     ordering_fields = ('-id', )
     ordering = ('-id', )
     permission_classes = [IsOwnerOrReadOnly("submitter"), OwnerOnlyIfPrivate("submitter")]
@@ -53,7 +53,7 @@ class BoardAutoCompleteViewSet(
 ):
     serializer_class = api.BoardAutoCompleteSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_fields = ("submitter__username", )
+    filterset_fields = ("submitter__username", )
     ordering_fields = ('-id', )
     ordering = ('-id', )
     pagination_class = None
@@ -82,4 +82,8 @@ drf_router.register(r'pins', PinViewSet, basename="pin")
 drf_router.register(r'images', ImageViewSet)
 drf_router.register(r'boards', BoardViewSet, basename="board")
 drf_router.register(r'tags-auto-complete', TagAutoCompleteViewSet)
-drf_router.register(r'boards-auto-complete', BoardAutoCompleteViewSet, basename="board")
+drf_router.register(
+    r'boards-auto-complete',
+    BoardAutoCompleteViewSet,
+    basename="board-autocomplete",
+)

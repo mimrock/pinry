@@ -134,3 +134,32 @@ zipp                3.8.0       PYSEC-2026-2074     3.19.1
 The fixes listed for the remaining Pillow, Requests, and urllib3 advisories
 require leaving the Python 3.9 dependency line. They are inputs to the planned
 Python and Django migration rather than silently ignored audit failures.
+
+## After Django 4.2 Bridge: 2026-07-17
+
+Upgrading Django and the REST, filtering, tagging, and schema dependencies
+reduced the result to 26 known vulnerabilities in 8 packages. In particular,
+the Django and Django REST framework findings are no longer present.
+
+```text
+Name     Version     ID                  Fix Versions
+-------- ----------- ------------------- ------------
+certifi  2022.5.18.1 PYSEC-2022-42986    2022.12.7
+certifi  2022.5.18.1 PYSEC-2023-135      2023.7.22
+certifi  2022.5.18.1 PYSEC-2024-230      2024.7.4
+idna     3.3         PYSEC-2024-60       3.7
+idna     3.3         PYSEC-2026-215      3.15
+markdown 3.4.4       PYSEC-2026-89
+pillow   11.3.0      13 advisories        12.3.0 resolves all listed findings
+requests 2.32.5      PYSEC-2026-2275     2.33.0
+urllib3  2.6.3       PYSEC-2026-142      2.7.0
+urllib3  2.6.3       PYSEC-2026-141      2.7.0
+sqlparse 0.4.2       PYSEC-2023-87       0.4.4
+sqlparse 0.4.2       PYSEC-2026-1940     0.5.0
+sqlparse 0.4.2       GHSA-27jp-wm6q-gp25 0.5.4
+zipp     3.8.0       PYSEC-2026-2074     3.19.1
+```
+
+The Pillow row is consolidated for readability; `pip-audit` reports each of
+its 13 advisory identifiers separately. The final Python 3.12 dependency
+refresh will verify every individual finding again.

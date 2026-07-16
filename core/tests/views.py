@@ -40,3 +40,8 @@ class TestDocs(TestCase):
     def test_should_doc_api_available_without_error(self):
         response = self.client.get("/api/v2/docs/")
         self.assertEqual(response.status_code, 200)
+
+    def test_should_openapi_schema_be_available(self):
+        response = self.client.get("/api/v2/schema/?format=json")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['openapi'].startswith('3.'))

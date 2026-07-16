@@ -87,7 +87,12 @@ class Image(BaseImage):
 class Board(models.Model):
     class Meta:
         unique_together = ("submitter", "name")
-        index_together = ("submitter", "name")
+        indexes = [
+            models.Index(
+                fields=("submitter", "name"),
+                name="core_board_submitter_name_idx",
+            ),
+        ]
 
     submitter = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=128, blank=False, null=False)

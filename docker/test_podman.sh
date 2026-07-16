@@ -13,4 +13,16 @@ image="${PINRY_TEST_IMAGE:-localhost/pinry-test:py39}"
     --file "${repo_root}/Dockerfile.test" \
     "${repo_root}"
 
-"${container_engine}" run --rm "${image}" "$@"
+if [[ "${1:-}" == "--" ]]; then
+    shift
+    if [[ "$#" -eq 0 ]]; then
+        echo "A command is required after --" >&2
+        exit 2
+    fi
+
+    entrypoint="$1"
+    shift
+    "${container_engine}" run --rm --entrypoint "${entrypoint}" "${image}" "$@"
+else
+    "${container_engine}" run --rm "${image}" "$@"
+fi

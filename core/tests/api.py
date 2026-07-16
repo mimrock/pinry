@@ -68,16 +68,16 @@ class BoardPrivacyTests(APITestCase):
 
     def test_should_non_owner_and_anonymous_user_has_no_permission_to_list_private_board(self):
         resp = self.client.get(self.boards_url)
-        self.assertEqual(len(resp.json()), 0, resp.json())
+        self.assertEqual(len(resp.json()['results']), 0, resp.json())
 
         self.client.login(username=self.non_owner.username, password='password')
         resp = self.client.get(self.boards_url)
-        self.assertEqual(len(resp.json()), 0, resp.content)
+        self.assertEqual(len(resp.json()['results']), 0, resp.content)
 
     def test_should_owner_has_permission_to_list_private_board(self):
         self.client.login(username=self.non_owner.username, password='password')
         resp = self.client.get(self.boards_url)
-        self.assertEqual(len(resp.json()), 0, resp.content)
+        self.assertEqual(len(resp.json()['results']), 0, resp.content)
 
     def test_should_non_owner_and_anonymous_user_has_no_permission_to_view_private_board(self):
         resp = self.client.get(self.board_url)
@@ -250,7 +250,7 @@ class PinTests(APITestCase):
             'That\'s something else (probably a CC logo)!',
             resp_data
         )
-        self.assertEquals(Pin.objects.count(), 2)
+        self.assertEqual(Pin.objects.count(), 2)
 
     def test_patch_detail_unauthenticated(self):
         image = create_image()

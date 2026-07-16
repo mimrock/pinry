@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.documentation import include_docs_urls
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from core.views import drf_router
 
@@ -15,7 +15,12 @@ urlpatterns = [
     # drf api
     path('api/v2/', include(drf_router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace="rest_framework")),
-    path('api/v2/docs/', include_docs_urls(title='PinryAPI', schema_url='/')),
+    path('api/v2/schema/', SpectacularAPIView.as_view(), name='api-schema'),
+    path(
+        'api/v2/docs/',
+        SpectacularSwaggerView.as_view(url_name='api-schema'),
+        name='api-docs',
+    ),
 
     # old api and views
     path('admin/', admin.site.urls),

@@ -52,6 +52,11 @@ Arguments are passed to `manage.py`, so a narrower test run can be invoked as:
 
     ./docker/test_podman.sh test core.tests
 
+Place a command after `--` to run it outside Django's management CLI:
+
+    ./docker/test_podman.sh -- flake8 .
+    ./docker/test_podman.sh -- python -Wa manage.py test
+
 Audit the locked runtime dependencies for known vulnerabilities with:
 
     ./docker/audit_podman.sh

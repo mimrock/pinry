@@ -35,5 +35,5 @@ def create_image():
 
 def create_pin(user, image, tags):
     pin = Pin.objects.create(submitter=user, image=image)
-    pin.tags.set(*tags)
+    pin.tags.set(tags)
     return pin
