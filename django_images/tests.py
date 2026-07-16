@@ -1,23 +1,16 @@
-from io import BytesIO
-
 import mock
-import qrcode
 from django.test import TestCase
-from django.core.files.images import ImageFile
 from django.conf import settings
 from django_images.models import Image, Thumbnail
 from django_images.templatetags.images import at_size
 from django_images.utils import scale_and_crop_single
-from PIL import Image as PILImage
+from tests.image_factory import image_file, pil_image
 
 
 class ImageModelTest(TestCase):
     def setUp(self):
-        image_obj = BytesIO()
-        qrcode_obj = qrcode.make('https://mirumee.com/')
-        qrcode_obj.save(image_obj)
         self.image = Image.objects.create(width=370, height=370,
-                                          image=ImageFile(image_obj, '01.png'))
+                                          image=image_file('01.png'))
 
     def test_get_by_size(self):
         size = list(settings.IMAGE_SIZES.keys())[0]
@@ -36,11 +29,8 @@ class ImageModelTest(TestCase):
 
 class ThumbnailManagerModelTest(TestCase):
     def setUp(self):
-        image_obj = BytesIO()
-        qrcode_obj = qrcode.make('https://mirumee.com/')
-        qrcode_obj.save(image_obj)
         self.image = Image.objects.create(width=370, height=370,
-                                          image=ImageFile(image_obj, '01.png'))
+                                          image=image_file('01.png'))
         self.size = list(settings.IMAGE_SIZES.keys())[0]
 
     def test_unknown_size(self):
@@ -60,11 +50,8 @@ class ThumbnailManagerModelTest(TestCase):
 
 class ThumbnailModelTest(TestCase):
     def setUp(self):
-        image_obj = BytesIO()
-        qrcode_obj = qrcode.make('https://mirumee.com/')
-        qrcode_obj.save(image_obj)
         self.image = Image.objects.create(width=370, height=370,
-                                          image=ImageFile(image_obj, '01.png'))
+                                          image=image_file('01.png'))
         size = list(settings.IMAGE_SIZES.keys())[0]
         self.thumb = Thumbnail.objects.get_or_create_at_sizes(self.image, [size])[0]
 
@@ -75,11 +62,8 @@ class ThumbnailModelTest(TestCase):
 
 class PostSaveSignalOriginalChangedTestCase(TestCase):
     def setUp(self):
-        image_obj = BytesIO()
-        qrcode_obj = qrcode.make('https://mirumee.com/')
-        qrcode_obj.save(image_obj)
         self.image = Image.objects.create(width=370, height=370,
-                                          image=ImageFile(image_obj, '01.png'))
+                                          image=image_file('01.png'))
         size = list(settings.IMAGE_SIZES.keys())[0]
         self.thumb = Thumbnail.objects.get_or_create_at_sizes(self.image, [size])[0]
 
@@ -92,11 +76,8 @@ class PostSaveSignalOriginalChangedTestCase(TestCase):
 
 class PostDeleteSignalDeleteImageFileTest(TestCase):
     def setUp(self):
-        image_obj = BytesIO()
-        qrcode_obj = qrcode.make('https://mirumee.com/')
-        qrcode_obj.save(image_obj)
         self.image = Image.objects.create(width=370, height=370,
-                                          image=ImageFile(image_obj, '01.png'))
+                                          image=image_file('01.png'))
         size = list(settings.IMAGE_SIZES.keys())[0]
         self.thumb = Thumbnail.objects.get_or_create_at_sizes(self.image, [size])[0]
 
@@ -126,11 +107,8 @@ class PostDeleteSignalDeleteImageFileTest(TestCase):
 
 class AtSizeTemplateTagTest(TestCase):
     def setUp(self):
-        image_obj = BytesIO()
-        qrcode_obj = qrcode.make('https://mirumee.com/')
-        qrcode_obj.save(image_obj)
         self.image = Image.objects.create(width=370, height=370,
-                                          image=ImageFile(image_obj, '01.png'))
+                                          image=image_file('01.png'))
         size = list(settings.IMAGE_SIZES.keys())[0]
         self.thumb = Thumbnail.objects.get_or_create_at_sizes(self.image, [size])[0]
 
@@ -142,10 +120,7 @@ class AtSizeTemplateTagTest(TestCase):
 
 class UtilsScaleAndDropTest(TestCase):
     def setUp(self):
-        image_obj = BytesIO()
-        qrcode_obj = qrcode.make('https://mirumee.com/')
-        qrcode_obj.save(image_obj)
-        self.image = PILImage.open(image_obj)
+        self.image = pil_image()
 
     def test_change_size(self):
         new_size = (10, 10)

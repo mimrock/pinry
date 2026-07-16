@@ -9,6 +9,7 @@ from taggit.models import Tag
 
 from .helpers import create_image, create_user, create_pin
 from core.models import Pin, Image, Board
+from tests.image_factory import image_bytes
 
 
 def _teardown_models():
@@ -19,7 +20,7 @@ def _teardown_models():
 
 
 def mock_requests_get(url, **kwargs):
-    response = mock.Mock(content=open('docs/src/imgs/logo-dark.png', 'rb').read())
+    response = mock.Mock(content=image_bytes())
     return response
 
 

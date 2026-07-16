@@ -2,10 +2,11 @@ from django.test import TestCase
 
 from core.models import Image
 from core.tests import create_user, reverse
+from tests.image_factory import image_file
 from users.models import User
 
 
-__all__ = ['CreateImageTest']
+__all__ = ['CreateImageTest', 'TestDocs']
 
 
 class CreateImageTest(TestCase):
@@ -18,8 +19,7 @@ class CreateImageTest(TestCase):
         Image.objects.all().delete()
 
     def test_post(self):
-        with open('docs/src/imgs/logo-dark.png', mode='rb') as image:
-            response = self.client.post(reverse('image-list'), {'image': image})
+        response = self.client.post(reverse('image-list'), {'image': image_file()})
         image = Image.objects.latest('pk')
         self.assertEqual(response.json()['id'], image.pk)
 
@@ -38,5 +38,5 @@ class CreateImageTest(TestCase):
 
 class TestDocs(TestCase):
     def test_should_doc_api_available_without_error(self):
-        response = self.client.get("/api/v2/docs")
+        response = self.client.get("/api/v2/docs/")
         self.assertEqual(response.status_code, 200)

@@ -1,14 +1,11 @@
 from django.conf import settings
-from django.core.files.images import ImageFile
 from django_images.models import Thumbnail
 
 from taggit.models import Tag
 
 from core.models import Pin, Image
+from tests.image_factory import image_file
 from users.models import User
-
-
-TEST_IMAGE_PATH = 'docs/src/imgs/logo-dark.png'
 
 
 def create_user(username):
@@ -31,7 +28,7 @@ def create_tag(name):
 
 
 def create_image():
-    image = Image.objects.create(image=ImageFile(open(TEST_IMAGE_PATH, 'rb')))
+    image = Image.objects.create(image=image_file())
     Thumbnail.objects.get_or_create_at_sizes(image, settings.IMAGE_SIZES.keys())
     return image
 

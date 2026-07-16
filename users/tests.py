@@ -1,17 +1,11 @@
 from django.test import TestCase
 from django.test.utils import override_settings
 
-import mock
 from django.urls import reverse
 from rest_framework.reverse import reverse as drf_reverse
 
 from .auth.backends import CombinedAuthBackend
 from .models import User
-
-
-def mock_requests_get(url, headers=None):
-    response = mock.Mock(content=open('docs/src/imgs/logo-dark.png', 'rb').read())
-    return response
 
 
 class CombinedAuthBackendTest(TestCase):
