@@ -36,6 +36,36 @@ cd pinry/docker
 ./build_docker.sh
 ```
 
+## Build and Run with Podman
+
+From the repository root, build the production image with:
+
+```
+./docker/build_podman.sh
+```
+
+The default image name is `localhost/pinry:latest`. To use a different name,
+pass it as the first argument:
+
+```
+./docker/build_podman.sh localhost/pinry:test
+```
+
+Run the image against an absolute data path:
+
+```
+mkdir -p "$(pwd)/docker/data/pinry"
+podman run --detach \
+    --name pinry-local \
+    --publish 127.0.0.1:8085:80 \
+    --volume "$(pwd)/docker/data/pinry:/data" \
+    localhost/pinry:latest
+```
+
+With rootless Podman, files in the mounted data directory can appear under an
+unmapped numeric UID/GID (or as `nobody:nogroup`) on the host because the image
+runs services as UID/GID 1000 inside Podman's user namespace.
+
 Now you can start your container by command like this
 
 ```
