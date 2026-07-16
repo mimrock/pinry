@@ -1,0 +1,11 @@
+FROM python:3.9-slim-bookworm
+
+ARG PIP_AUDIT_VERSION=2.8.0
+
+WORKDIR /audit
+
+RUN python -m pip install --no-cache-dir "pip-audit==${PIP_AUDIT_VERSION}"
+
+COPY requirements.txt ./
+
+ENTRYPOINT ["pip-audit", "--require-hashes", "--progress-spinner", "off", "--requirement", "requirements.txt"]

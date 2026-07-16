@@ -1,0 +1,12 @@
+FROM python:3.9-slim-bookworm
+
+ARG POETRY_VERSION=1.8.3
+ARG POETRY_EXPORT_VERSION=1.8.0
+
+RUN python -m pip install --no-cache-dir \
+    "poetry==${POETRY_VERSION}" \
+    "poetry-plugin-export==${POETRY_EXPORT_VERSION}"
+
+WORKDIR /app
+
+ENTRYPOINT ["poetry"]

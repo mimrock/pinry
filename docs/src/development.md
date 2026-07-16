@@ -2,7 +2,7 @@
 
 Pinry currently has two major requirements:
 
-- Python@3.6+
+- Python@3.9
 - NodeJS@18
 
 For minor requirements you need two have installed two package managers that
@@ -43,6 +43,25 @@ recommend using our tags/versions though.
 To run Pinry's tests inside the Pinry repo run:
 
     poetry run python manage.py test
+
+To run the tests in the repeatable Python 3.9 Podman environment instead:
+
+    ./docker/test_podman.sh
+
+Arguments are passed to `manage.py`, so a narrower test run can be invoked as:
+
+    ./docker/test_podman.sh test core.tests
+
+Audit the locked runtime dependencies for known vulnerabilities with:
+
+    ./docker/audit_podman.sh
+
+Regenerate the Poetry lock and exported requirements with the pinned Poetry
+version by running:
+
+    ./docker/poetry_podman.sh lock
+    ./docker/poetry_podman.sh export -f requirements.txt -o requirements.txt
+    ./docker/poetry_podman.sh export --with dev -f requirements.txt -o requirements-dev.txt
 
 # Docker
 
