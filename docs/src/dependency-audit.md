@@ -4,7 +4,7 @@ The runtime dependency lock can be audited from the repository root with:
 
     ./docker/audit_podman.sh
 
-The audit runs in an isolated Python 3.9 container so the scanner's own
+The audit runs in an isolated Python 3.12 container so the scanner's own
 dependencies do not alter Pinry's locked environment.
 
 ## Baseline: 2026-07-16
@@ -163,3 +163,32 @@ zipp     3.8.0       PYSEC-2026-2074     3.19.1
 The Pillow row is consolidated for readability; `pip-audit` reports each of
 its 13 advisory identifiers separately. The final Python 3.12 dependency
 refresh will verify every individual finding again.
+
+## After Python 3.12 Upgrade: 2026-07-17
+
+A full lock regeneration on Python 3.12, rather than retaining compatible old
+transitive versions, removed every finding outside Pillow. `pip-audit 2.10.1`
+reports 14 findings in that one package; `PYSEC-2026-165` appears twice in the
+scanner output, so there are 13 unique identifiers.
+
+```text
+Name   Version ID              Fix Versions
+------ ------- --------------- ------------
+pillow 11.3.0  PYSEC-2026-165  12.2.0
+pillow 11.3.0  PYSEC-2026-165  12.2.0
+pillow 11.3.0  PYSEC-2026-2250 12.2.0
+pillow 11.3.0  PYSEC-2026-2253 12.3.0
+pillow 11.3.0  PYSEC-2026-2251 12.2.0
+pillow 11.3.0  PYSEC-2026-2255 12.3.0
+pillow 11.3.0  PYSEC-2026-2257 12.3.0
+pillow 11.3.0  PYSEC-2026-2256 12.3.0
+pillow 11.3.0  PYSEC-2026-2254 12.3.0
+pillow 11.3.0  PYSEC-2026-2252 12.2.0
+pillow 11.3.0  PYSEC-2026-2249 12.1.1
+pillow 11.3.0  PYSEC-2026-2874 12.2.0
+pillow 11.3.0  PYSEC-2026-3453 12.3.0
+pillow 11.3.0  PYSEC-2026-3451 12.3.0
+```
+
+Pillow 12.3.0 is the first listed release that resolves all of these findings
+and remains the final isolated image dependency checkpoint.

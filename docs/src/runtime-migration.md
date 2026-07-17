@@ -21,14 +21,16 @@ Last updated: 2026-07-17
 
 Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 
-- Python is constrained to `>=3.9,<3.10`.
+- Python is constrained to `>=3.12,<3.13` and resolves to 3.12.13 in the
+  production image.
 - Django is 4.2.30; DRF is 3.16.1 and the API schema uses
   drf-spectacular 0.30.0.
-- Pillow is 11.3.0, Requests is 2.32.5, and urllib3 is 2.6.3.
-- Gunicorn is 23.0.0.
-- The Python 3.9 container suite passes 50 tests and configured flake8.
+- Pillow is 11.3.0, Requests is 2.33.0, and urllib3 is 2.7.0.
+- Gunicorn is 26.0.0.
+- The Python 3.12 container suite passes 50 tests and configured flake8.
 - The production image builds and its persistence/HTTP smoke checks pass.
-- The dependency audit reports 26 vulnerabilities in 8 packages.
+- The dependency audit reports 14 findings, including one duplicate advisory
+  identifier, all in Pillow.
 
 ## Checkpoints
 
@@ -39,7 +41,7 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 | 2. Inventory and resolve Django 2.2 deprecations | Complete | Pinry-owned deprecation warnings removed |
 | 3. Bridge Django 2.2 to 3.2 | Complete | 3.2.25; 49 tests; production persistence smoke passed |
 | 4. Bridge Django 3.2 to 4.2 | Complete | 4.2.30; 50 tests; schema migration and persistence smoke passed |
-| 5. Upgrade Python 3.9 to 3.12 | Not started | |
+| 5. Upgrade Python 3.9 to 3.12 | Complete | 3.12.13; 50 tests; production persistence smoke passed |
 | 6. Upgrade Django 4.2 to 5.0 | Not started | |
 | 7. Upgrade Django 5.0 to 5.1 | Not started | |
 | 8. Upgrade Django 5.1 to 5.2 LTS | Not started | |
@@ -156,3 +158,30 @@ that a board stored in `/data` survives a container replacement.
   index, and preserved the `Podman smoke board` record.
 - The smoke container stopped with exit code 0 rather than the previous 137.
   Podman 4.9's remote stop call still took about 25 seconds to return.
+
+### 2026-07-17: Python 3.12 Runtime
+
+- Started from checkpoint commit `c9c41e3`.
+- Updated the production, test, audit, Poetry, legacy development, and CI
+  runtimes together so no maintained path silently remains on Python 3.9.
+- Consolidated the duplicated Poetry development dependency tables, moved
+  static metadata to the standard `[project]` table, and replaced the obsolete
+  `mock` backport with `unittest.mock`.
+- Pillow remains at 11.3.0 for the later isolated image-library checkpoint.
+- Django 4.2 requires the abandoned `cx-Oracle` driver, which cannot build on
+  Python 3.12. The intermediate image retains MySQL support but temporarily
+  omits Oracle; add the maintained `oracledb` driver once Django 5.x supports
+  it in the next framework checkpoints.
+- Regenerated the lock from constraints with Poetry 2.4.1 rather than retaining
+  old compatible transitive pins. Updated Gunicorn to 26.0.0, Requests to
+  2.33.0, urllib3 to 2.7.0, Markdown to 3.10.2, and psycopg2-binary to 2.9.12.
+- Updated flake8, Black, MkDocs, Material for MkDocs, django-extensions, and
+  qrcode to Python 3.12-compatible releases.
+- Passed 50 serial tests, 50 parallel tests, warnings-visible tests, flake8,
+  system checks, migration drift checks, `poetry check`, and strict MkDocs
+  build. Only historical `index_together` migration-state warnings remain.
+- Audit improved from 26 findings in 8 packages to 14 findings in Pillow only;
+  pip-audit 2.10.1 reports `PYSEC-2026-165` twice.
+- Built both `localhost/pinry:py312` and the legacy compose development image.
+- Received HTTP 200 from all five smoke endpoints on Python 3.12.13, confirmed
+  all migrations and the persisted board, and stopped with exit code 0.

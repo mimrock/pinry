@@ -1,7 +1,7 @@
 import json
+from unittest import mock
 
 from django.urls import reverse
-import mock
 from rest_framework import status
 from rest_framework.test import APITestCase
 

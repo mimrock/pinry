@@ -1,7 +1,7 @@
-FROM python:3.9-slim-bookworm
+FROM python:3.12-slim-bookworm
 
-ARG POETRY_VERSION=1.8.3
-ARG POETRY_EXPORT_VERSION=1.8.0
+ARG POETRY_VERSION=2.4.1
+ARG POETRY_EXPORT_VERSION=1.10.0
 
 RUN python -m pip install --no-cache-dir \
     "poetry==${POETRY_VERSION}" \
