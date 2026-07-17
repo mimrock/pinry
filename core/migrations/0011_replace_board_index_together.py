@@ -3,6 +3,33 @@
 from django.db import migrations, models
 
 
+LEGACY_INDEX_FIELDS = {('submitter', 'name')}
+
+
+def remove_legacy_index(apps, schema_editor):
+    board = apps.get_model('core', 'Board')
+    try:
+        schema_editor.alter_index_together(
+            board,
+            LEGACY_INDEX_FIELDS,
+            set(),
+        )
+    except ValueError as error:
+        # Django 5.1 keeps the historical state operation but no longer creates
+        # index_together indexes while building a fresh database.
+        if 'Found wrong number (0) of constraints' not in str(error):
+            raise
+
+
+def restore_legacy_index(apps, schema_editor):
+    board = apps.get_model('core', 'Board')
+    schema_editor.alter_index_together(
+        board,
+        set(),
+        LEGACY_INDEX_FIELDS,
+    )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -10,9 +37,19 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterIndexTogether(
-            name='board',
-            index_together=set(),
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunPython(
+                    remove_legacy_index,
+                    restore_legacy_index,
+                ),
+            ],
+            state_operations=[
+                migrations.AlterIndexTogether(
+                    name='board',
+                    index_together=set(),
+                ),
+            ],
         ),
         migrations.AddIndex(
             model_name='board',

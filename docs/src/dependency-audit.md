@@ -213,3 +213,9 @@ pillow 11.3.0  14 rows        12.3.0 resolves all listed findings
 Django 5.1.15 is beyond every listed Django fix version and is the next
 explicitly tested bridge. Pillow remains isolated for the final dependency
 checkpoint.
+
+## After Django 5.1 Bridge: 2026-07-17
+
+The Django 5.1.15 audit removes all four findings introduced by the unsupported
+5.0 bridge. The result returns to 14 Pillow rows with 13 unique identifiers,
+matching the Python 3.12 checkpoint above.

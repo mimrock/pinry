@@ -12,7 +12,7 @@ dynamic = ["dependencies"]
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
 requests = "==2.33.0"
-django = "==5.0.14"
+django = "==5.1.15"
 pillow = "==11.3.0"
 urllib3 = "==2.7.0"
 markdown = "==3.10.2"

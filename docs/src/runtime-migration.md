@@ -23,14 +23,14 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 
 - Python is constrained to `>=3.12,<3.13` and resolves to 3.12.13 in the
   production image.
-- Django is 5.0.14; DRF is 3.16.1 and the API schema uses
+- Django is 5.1.15; DRF is 3.16.1 and the API schema uses
   drf-spectacular 0.30.0.
 - Pillow is 11.3.0, Requests is 2.33.0, and urllib3 is 2.7.0.
 - Gunicorn is 26.0.0.
 - The Python 3.12 container suite passes 50 tests and configured flake8.
 - The production image builds and its persistence/HTTP smoke checks pass.
-- The dependency audit reports 18 findings: four in the unsupported Django 5.0
-  bridge and 14 in Pillow, including one duplicate Pillow identifier.
+- The dependency audit reports 14 findings, including one duplicate advisory
+  identifier, all in Pillow.
 
 ## Checkpoints
 
@@ -43,7 +43,7 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 | 4. Bridge Django 3.2 to 4.2 | Complete | 4.2.30; 50 tests; schema migration and persistence smoke passed |
 | 5. Upgrade Python 3.9 to 3.12 | Complete | 3.12.13; 50 tests; production persistence smoke passed |
 | 6. Upgrade Django 4.2 to 5.0 | Complete | 5.0.14; 50 tests; optional database drivers and persistence smoke passed |
-| 7. Upgrade Django 5.0 to 5.1 | Not started | |
+| 7. Upgrade Django 5.0 to 5.1 | Complete | 5.1.15; fresh and existing database paths passed |
 | 8. Upgrade Django 5.1 to 5.2 LTS | Not started | |
 | 9. Upgrade Pillow and finish the audit | Not started | |
 | 10. Run final production and persistence verification | Not started | |
@@ -205,3 +205,21 @@ that a board stored in `/data` survives a container replacement.
 - The audit reports 18 rows: four Django findings and 14 Pillow findings. This
   unsupported Django release is only a verified migration bridge; all four
   Django findings are fixed by the next 5.1.15 checkpoint.
+
+### 2026-07-17: Django 5.1.15 Bridge
+
+- Started from checkpoint commit `6835ac0`.
+- This checkpoint must verify that Django 5.1 can still reconstruct the
+  historical `index_together` operations while the runtime model continues to
+  use its named `models.Index` replacement.
+- A fresh-database test confirmed Django 5.1 retains the historical migration
+  state but no longer creates its database index. Migration `0011` now removes
+  that legacy index only when it exists, while applying the state transition
+  separately before creating the named replacement.
+- Passed 50 serial tests, 50 parallel tests, warnings-visible tests, flake8,
+  system checks, migration drift checks, and `poetry check` without warnings.
+- The audit is back to the 14 Pillow-only rows; all four Django 5.0 bridge
+  findings are resolved.
+- Built `localhost/pinry:django51` and received HTTP 200 from all five smoke
+  endpoints. Confirmed both optional database drivers, preserved the existing
+  board, and stopped with exit code 0.
