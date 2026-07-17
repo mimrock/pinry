@@ -219,3 +219,9 @@ checkpoint.
 The Django 5.1.15 audit removes all four findings introduced by the unsupported
 5.0 bridge. The result returns to 14 Pillow rows with 13 unique identifiers,
 matching the Python 3.12 checkpoint above.
+
+## After Django 5.2 LTS: 2026-07-17
+
+Django 5.2.16, Django REST framework 3.17.1, and django-filter 25.2 retain the
+same Pillow-only result: 14 reported rows and 13 unique identifiers. No
+framework or REST dependencies have a listed advisory in the locked runtime.

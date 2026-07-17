@@ -23,8 +23,8 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 
 - Python is constrained to `>=3.12,<3.13` and resolves to 3.12.13 in the
   production image.
-- Django is 5.1.15; DRF is 3.16.1 and the API schema uses
-  drf-spectacular 0.30.0.
+- Django is 5.2.16 LTS; DRF is 3.17.1, django-filter is 25.2, and the
+  API schema uses drf-spectacular 0.30.0.
 - Pillow is 11.3.0, Requests is 2.33.0, and urllib3 is 2.7.0.
 - Gunicorn is 26.0.0.
 - The Python 3.12 container suite passes 50 tests and configured flake8.
@@ -44,7 +44,7 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 | 5. Upgrade Python 3.9 to 3.12 | Complete | 3.12.13; 50 tests; production persistence smoke passed |
 | 6. Upgrade Django 4.2 to 5.0 | Complete | 5.0.14; 50 tests; optional database drivers and persistence smoke passed |
 | 7. Upgrade Django 5.0 to 5.1 | Complete | 5.1.15; fresh and existing database paths passed |
-| 8. Upgrade Django 5.1 to 5.2 LTS | Not started | |
+| 8. Upgrade Django 5.1 to 5.2 LTS | Complete | 5.2.16 LTS; 50 tests; production persistence smoke passed |
 | 9. Upgrade Pillow and finish the audit | Not started | |
 | 10. Run final production and persistence verification | Not started | |
 
@@ -223,3 +223,17 @@ that a board stored in `/data` survives a container replacement.
 - Built `localhost/pinry:django51` and received HTTP 200 from all five smoke
   endpoints. Confirmed both optional database drivers, preserved the existing
   board, and stopped with exit code 0.
+
+### 2026-07-17: Django 5.2.16 LTS
+
+- Started from checkpoint commit `f5f8d0a`.
+- Updating Django to the current 5.2 LTS security release together with DRF
+  3.17.1 and django-filter 25.2, whose current releases target Django 5.2.
+- Passed 50 serial tests, 50 parallel tests, warnings-visible tests, flake8,
+  system checks, migration drift checks, `poetry check`, and the strict MkDocs
+  build. The warnings-visible run produced no deprecation warnings.
+- The audit remains isolated to the 14 Pillow rows scheduled for checkpoint 9.
+- Built `localhost/pinry:django52` and received HTTP 200 from all five smoke
+  endpoints. Confirmed the framework, REST, filter, Oracle, and MySQL versions
+  in the final image, preserved the existing board, and stopped with exit code
+  0.
