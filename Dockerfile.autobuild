@@ -22,14 +22,15 @@ COPY pinry-spa .
 RUN pnpm build
 
 
-# Build MySQL support separately so compiler packages stay out of the final image.
+# Build optional database support separately so compiler packages stay out of
+# the final image.
 FROM python:3.12-slim-bookworm as base
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && if [ $(dpkg --print-architecture) = "arm64" -o $(dpkg --print-architecture) = "armhf" ]; then apt-get -y install apt-utils; fi \
     && apt-get -y install pkg-config gcc default-libmysqlclient-dev
-RUN pip --no-cache-dir install --user mysqlclient
+RUN pip --no-cache-dir install --user mysqlclient==2.2.8 oracledb==4.0.2
 
 
 # Final image
@@ -49,7 +50,7 @@ RUN groupadd -g 2300 tmpgroup \
 
 RUN apt-get update \
     # Install nginx
-    && apt-get -y  install nginx pwgen \
+    && apt-get -y install nginx pwgen libmariadb3 \
     # Install Pillow dependencies
     && apt-get -y install libopenjp2-7 libjpeg-turbo-progs libjpeg62-turbo-dev libtiff-dev libxcb1 \
     # Needed to compile psycopg2 on arm (fallback for psycopg2-binary)

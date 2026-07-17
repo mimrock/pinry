@@ -23,14 +23,14 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 
 - Python is constrained to `>=3.12,<3.13` and resolves to 3.12.13 in the
   production image.
-- Django is 4.2.30; DRF is 3.16.1 and the API schema uses
+- Django is 5.0.14; DRF is 3.16.1 and the API schema uses
   drf-spectacular 0.30.0.
 - Pillow is 11.3.0, Requests is 2.33.0, and urllib3 is 2.7.0.
 - Gunicorn is 26.0.0.
 - The Python 3.12 container suite passes 50 tests and configured flake8.
 - The production image builds and its persistence/HTTP smoke checks pass.
-- The dependency audit reports 14 findings, including one duplicate advisory
-  identifier, all in Pillow.
+- The dependency audit reports 18 findings: four in the unsupported Django 5.0
+  bridge and 14 in Pillow, including one duplicate Pillow identifier.
 
 ## Checkpoints
 
@@ -42,14 +42,15 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 | 3. Bridge Django 2.2 to 3.2 | Complete | 3.2.25; 49 tests; production persistence smoke passed |
 | 4. Bridge Django 3.2 to 4.2 | Complete | 4.2.30; 50 tests; schema migration and persistence smoke passed |
 | 5. Upgrade Python 3.9 to 3.12 | Complete | 3.12.13; 50 tests; production persistence smoke passed |
-| 6. Upgrade Django 4.2 to 5.0 | Not started | |
+| 6. Upgrade Django 4.2 to 5.0 | Complete | 5.0.14; 50 tests; optional database drivers and persistence smoke passed |
 | 7. Upgrade Django 5.0 to 5.1 | Not started | |
 | 8. Upgrade Django 5.1 to 5.2 LTS | Not started | |
 | 9. Upgrade Pillow and finish the audit | Not started | |
 | 10. Run final production and persistence verification | Not started | |
 
 Intermediate Django releases are migration checkpoints only. They are not
-deployment targets because Django 3.2 and 4.2 are no longer supported.
+deployment targets because Django 3.2, 4.2, 5.0, and 5.1 are no longer
+supported.
 
 ## Verification Gate
 
@@ -185,3 +186,22 @@ that a board stored in `/data` survives a container replacement.
 - Built both `localhost/pinry:py312` and the legacy compose development image.
 - Received HTTP 200 from all five smoke endpoints on Python 3.12.13, confirmed
   all migrations and the persisted board, and stopped with exit code 0.
+
+### 2026-07-17: Django 5.0.14 Bridge
+
+- Started from checkpoint commit `732893e`.
+- Django 5.0 supports the maintained `oracledb` driver. The production image
+  restores Oracle support with oracledb 4.0.2 and pins mysqlclient 2.2.8.
+- The optional-driver smoke exposed that the final image copied mysqlclient
+  without its MariaDB shared library. The final stage now installs
+  `libmariadb3`.
+- Passed 50 serial tests, 50 parallel tests, warnings-visible tests, flake8,
+  system checks, migration drift checks, and `poetry check`. Only the known
+  historical `index_together` migration-state warnings remain.
+- Built `localhost/pinry:django50` and received HTTP 200 from all five smoke
+  endpoints. Confirmed Django 5.0.14, oracledb 4.0.2, and mysqlclient 2.2.8
+  import in the final image, preserved the existing board, and stopped with
+  exit code 0.
+- The audit reports 18 rows: four Django findings and 14 Pillow findings. This
+  unsupported Django release is only a verified migration bridge; all four
+  Django findings are fixed by the next 5.1.15 checkpoint.

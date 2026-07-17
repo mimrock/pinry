@@ -192,3 +192,24 @@ pillow 11.3.0  PYSEC-2026-3451 12.3.0
 
 Pillow 12.3.0 is the first listed release that resolves all of these findings
 and remains the final isolated image dependency checkpoint.
+
+## Django 5.0 Migration Bridge: 2026-07-17
+
+Django 5.0.14 is an unsupported compatibility checkpoint rather than a
+deployment target. The audit reports 18 rows: the 14 existing Pillow rows and
+four Django advisories. There are 17 unique identifiers because pip-audit
+reports `PYSEC-2026-165` twice for Pillow.
+
+```text
+Name   Version ID             Fix Versions
+------ ------- -------------- -------------------
+django 5.0.14  PYSEC-2025-47  4.2.22,5.1.10,5.2.2
+django 5.0.14  PYSEC-2025-105 4.2.24,5.1.12,5.2.6
+django 5.0.14  PYSEC-2025-107 4.2.26,5.1.14,5.2.8
+django 5.0.14  PYSEC-2025-108 4.2.26,5.1.14,5.2.8
+pillow 11.3.0  14 rows        12.3.0 resolves all listed findings
+```
+
+Django 5.1.15 is beyond every listed Django fix version and is the next
+explicitly tested bridge. Pillow remains isolated for the final dependency
+checkpoint.
