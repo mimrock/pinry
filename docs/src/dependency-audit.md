@@ -225,3 +225,16 @@ matching the Python 3.12 checkpoint above.
 Django 5.2.16, Django REST framework 3.17.1, and django-filter 25.2 retain the
 same Pillow-only result: 14 reported rows and 13 unique identifiers. No
 framework or REST dependencies have a listed advisory in the locked runtime.
+
+## Final Runtime Audit: 2026-07-17
+
+After upgrading Pillow to 12.3.0 and Requests to 2.34.2, while retaining
+urllib3 2.7.0, `pip-audit 2.10.1` reports:
+
+```text
+No known vulnerabilities found
+```
+
+The scanner checked the hash-locked `requirements.txt` in the isolated Python
+3.12 audit container. This is the final result for the Python 3.12 and Django
+5.2.16 migration.

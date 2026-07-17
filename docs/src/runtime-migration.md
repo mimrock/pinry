@@ -25,12 +25,11 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
   production image.
 - Django is 5.2.16 LTS; DRF is 3.17.1, django-filter is 25.2, and the
   API schema uses drf-spectacular 0.30.0.
-- Pillow is 11.3.0, Requests is 2.33.0, and urllib3 is 2.7.0.
+- Pillow is 12.3.0, Requests is 2.34.2, and urllib3 is 2.7.0.
 - Gunicorn is 26.0.0.
 - The Python 3.12 container suite passes 50 tests and configured flake8.
 - The production image builds and its persistence/HTTP smoke checks pass.
-- The dependency audit reports 14 findings, including one duplicate advisory
-  identifier, all in Pillow.
+- The dependency audit reports no known vulnerabilities.
 
 ## Checkpoints
 
@@ -45,8 +44,8 @@ Baseline commit: `3ba6a24` (`build: update Python 3.9 image dependencies`)
 | 6. Upgrade Django 4.2 to 5.0 | Complete | 5.0.14; 50 tests; optional database drivers and persistence smoke passed |
 | 7. Upgrade Django 5.0 to 5.1 | Complete | 5.1.15; fresh and existing database paths passed |
 | 8. Upgrade Django 5.1 to 5.2 LTS | Complete | 5.2.16 LTS; 50 tests; production persistence smoke passed |
-| 9. Upgrade Pillow and finish the audit | Not started | |
-| 10. Run final production and persistence verification | Not started | |
+| 9. Upgrade Pillow and finish the audit | Complete | Pillow 12.3.0; Requests 2.34.2; zero audit findings |
+| 10. Run final production and persistence verification | Complete | Default image, HTTP, drivers, thumbnail, data, and PID 1 exit passed |
 
 Intermediate Django releases are migration checkpoints only. They are not
 deployment targets because Django 3.2, 4.2, 5.0, and 5.1 are no longer
@@ -237,3 +236,28 @@ that a board stored in `/data` survives a container replacement.
   endpoints. Confirmed the framework, REST, filter, Oracle, and MySQL versions
   in the final image, preserved the existing board, and stopped with exit code
   0.
+
+### 2026-07-17: Final Runtime Dependencies
+
+- Started from checkpoint commit `9871f72`.
+- PyPI identifies Pillow 12.3.0, Requests 2.34.2, and urllib3 2.7.0 as their
+  current releases. Updating Pillow and Requests while retaining the already
+  current urllib3 pin.
+- Pinry already uses `Image.Resampling.LANCZOS`; no removed Pillow resampling
+  constant remains in the Python source.
+- Passed 50 serial tests, 50 parallel tests, warnings-visible tests, flake8,
+  system checks, migration drift checks, `poetry check`, and the strict MkDocs
+  build.
+- `pip-audit 2.10.1` reports no known vulnerabilities in the locked runtime
+  requirements.
+- Built the default `localhost/pinry:latest` image and received HTTP 200 from
+  all five smoke endpoints. Confirmed the target Python dependencies and both
+  optional database drivers, verified no pending migrations, and preserved the
+  existing board.
+- Exercised Pillow in the production image by resizing, cropping, and encoding
+  an in-memory image as a 24 by 24 PNG. The container's PID 1 stopped with exit
+  code 0.
+- Podman 4.9 still took about 25 seconds to return from the remote stop call
+  and logged forced cleanup of a remaining container process. Track process
+  supervision as a separate container-runtime cleanup; it does not change the
+  verified application exit code or persisted data result.
