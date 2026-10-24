@@ -2,6 +2,11 @@
 docker/data/
 .github/
 
+# local credentials and agent state
+.ssh
+.agents
+.codex
+
 # static
 static
 .idea
