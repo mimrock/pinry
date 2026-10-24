@@ -30,7 +30,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && if [ $(dpkg --print-architecture) = "arm64" -o $(dpkg --print-architecture) = "armhf" ]; then apt-get -y install apt-utils; fi \
     && apt-get -y install pkg-config gcc default-libmysqlclient-dev
-RUN pip --no-cache-dir install --user mysqlclient==2.2.8 oracledb==4.0.2
+# oracledb leaves cryptography unpinned; pin it so security fixes are explicit.
+RUN pip --no-cache-dir install --user mysqlclient==2.2.8 oracledb==4.0.2 cryptography==50.0.2
 
 
 # Final image
@@ -49,10 +50,13 @@ RUN groupadd -g 2300 tmpgroup \
  && groupdel tmpgroup
 
 RUN apt-get update \
+    # Apply Debian security updates newer than the base image
+    && apt-get -y upgrade \
     # Install nginx
     && apt-get -y install nginx pwgen libmariadb3 \
-    # Install Pillow dependencies
-    && apt-get -y install libopenjp2-7 libjpeg-turbo-progs libjpeg62-turbo-dev libtiff-dev libxcb1 \
+    # Install Pillow dependencies (the Pillow wheels bundle their own codecs,
+    # so the -dev headers and the kernel headers they pull in are not needed)
+    && apt-get -y install libopenjp2-7 libjpeg-turbo-progs libxcb1 \
     # Needed to compile psycopg2 on arm (fallback for psycopg2-binary)
     && if [ $(dpkg --print-architecture) = "arm64" -o $(dpkg --print-architecture) = "armhf" ]; then apt-get -y install apt-utils libpq-dev gcc; fi \
     && rm -rf /var/lib/apt/lists/* \
